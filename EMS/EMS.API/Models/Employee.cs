@@ -12,7 +12,7 @@ public class Employee
     {
         get
         {
-            return DateTime.UtcNow.Year - DateOfJoining.Year;
+            return (int) (DateTime.UtcNow - DateOfJoining).TotalDays / 365;
         }
     }
 }
