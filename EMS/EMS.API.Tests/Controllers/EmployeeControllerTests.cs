@@ -3,6 +3,7 @@ using EMS.API.Infrastructure;
 using EMS.API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EMS.API.Tests.Controllers
 {
@@ -14,25 +15,23 @@ namespace EMS.API.Tests.Controllers
             new Employee { ID = 2, FirstName = "Jane", LastName = "Smith", Email = "jane.smith@example.com", JobTitle = "Manager", DateOfJoining = DateTime.Now }
         };
 
-        private readonly EmployeeController controller;
-
-        public EmployeeControllerTests()
+        private EmployeeDbContext GetDbContext()
         {
             var options = new DbContextOptionsBuilder<EmployeeDbContext>()
-                .UseInMemoryDatabase("fakeDb")
+                .UseInMemoryDatabase("fakeDb", new InMemoryDatabaseRoot())
                 .Options;
 
             var employeeDbContext = new EmployeeDbContext(options);
             employeeDbContext.AddRange(expectedEmployees);
             employeeDbContext.SaveChanges();
-
-            controller = new EmployeeController(employeeDbContext);
+            return employeeDbContext;
         }
 
         [Fact]
         public void GetEmployees_ShouldReturnAllEmployees()
         {
             // Arrange
+            var controller = new EmployeeController(GetDbContext());
             // Act
             var result = controller.GetEmployees();
             var actualEmployees = ((ObjectResult)result.Result).Value as List<Employee>;
@@ -46,6 +45,7 @@ namespace EMS.API.Tests.Controllers
         public void GetEmployee_WithValidId_ShouldReturnEmployee()
         {
             // Arrange
+            var controller = new EmployeeController(GetDbContext());
             var expectedEmployee = expectedEmployees.First();
 
             // Act
@@ -61,6 +61,7 @@ namespace EMS.API.Tests.Controllers
         public void GetEmployee_WithInvalidId_ShouldReturnNotFound()
         {
             // Arrange
+            var controller = new EmployeeController(GetDbContext());
             var invalidID = -1;
 
             // Act
@@ -74,6 +75,7 @@ namespace EMS.API.Tests.Controllers
         public void CreateEmployees_ShouldReturnCreatedEmployee()
         {
             // Arrange
+            var controller = new EmployeeController(GetDbContext());
             var newEmployee = new Employee { ID = 3, FirstName = "John", LastName = "Doe", Email = "john.doe@example.com", JobTitle = "Developer", DateOfJoining = DateTime.Now };
             controller.AddEmployee(newEmployee);
 
@@ -90,6 +92,7 @@ namespace EMS.API.Tests.Controllers
         public void UpdateEmployees_ShouldPerformChanges()
         {
             // Arrange
+            var controller = new EmployeeController(GetDbContext());
             var employee = expectedEmployees[0];
             employee.FirstName = "Changed FirstName";
             employee.LastName = "Changed LastName";
@@ -116,6 +119,7 @@ namespace EMS.API.Tests.Controllers
         public void DeleteEmployees_ShouldPerformChanges()
         {
             // Arrange
+            var controller = new EmployeeController(GetDbContext());
             controller.DeleteEmployee(1);
 
             // Act
