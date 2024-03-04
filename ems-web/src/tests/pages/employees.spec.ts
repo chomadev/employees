@@ -10,8 +10,6 @@ vitest.mock('client')
 
 let container;
 
-
-
 describe("Employees Page", () => {
   beforeEach(() => {
     container = document.createElement('div');

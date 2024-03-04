@@ -54,7 +54,9 @@ function Employees(props: Props) {
   }
 
   const loadEmployees = (): void => {
-    listAllEmployees().then(data => setEmployees(data));
+    listAllEmployees()
+      .then(data => setEmployees(data))
+      .catch(e => console.error(e));
   }
 
   const clearFilters = (): void => {

@@ -33,7 +33,7 @@ function EmployeesTable(props: Props) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {employees.length > 0
+            {employees && employees.length > 0
               ? employees.map(employee => (
                 <TableRow key={employee.id}>
                   <TableCell className="font-medium w-1/4">{employee.lastName + ", " + employee.firstName}</TableCell>
